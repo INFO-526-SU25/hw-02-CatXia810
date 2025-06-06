@@ -1,13 +1,23 @@
 ---
 title: "HW 02"
-author: "INSERT YOUR NAME HERE"
+author: "Cat Xia"
 format: 
   html:
     embed-resources: true
 toc: true
 ---
 
+Install Packages
+```{r}
+if (!require("pacman"))
+  install.packages("pacman")
+
+pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox) 
+```
+
+
 ## 1 - A new day, a new plot, a new geom
+
 
 ```{r}
 #| label: label-me-1
