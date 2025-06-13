@@ -13,7 +13,7 @@ Install Packages
 if (!require("pacman"))
   install.packages("pacman")
 
-pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox) 
+pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox, fs, janitor) 
 ```
 
 
@@ -72,11 +72,25 @@ The graph shows the density of ratings for Edinburgh airbnbs based on Neighborho
 I kept the variable in because it is a significant number of data points to ignore but colored it faintly so that it does not distract from the information I want to show.
 
 ## 2 - Foreign Connected PACs
+```{r Get data from files}
+#| label: get data from files Q2 (code given)
+# get a list of files with "Foreign Connected PAC" in their names
+list_of_files <- dir_ls(path = "data", regexp = "Foreign Connected PAC")
 
-```{r}
-#| label: label-me-2
-
+# read all files and row bind them
+# keeping track of the file name in a new column called year
+pac <- read_csv(list_of_files, id = "year")
 ```
+
+
+```{r Q2 data wrangling}
+#| label: label-me-2
+pac_clean <- pac |>
+  clean_names() |>
+  mutate(year = as.integer(parse_number(year) + 1)) |> #parse_number from textbook, take advantage of 1 year span for each file to get the correct year
+  separate_wider_delim(cols = country_of_origin_parent_company, delim = "/", names = c("country_of_origin", "parent_company"), too_many = "merge")
+```
+
 
 ## 3 - Median housing prices in the US
 
