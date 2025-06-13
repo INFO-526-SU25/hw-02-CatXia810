@@ -83,12 +83,38 @@ pac <- read_csv(list_of_files, id = "year")
 ```
 
 
-```{r Q2 data wrangling}
-#| label: label-me-2
-pac_clean <- pac |>
+```{r Q2 data cleaning initial}
+#| label: Q2 data cleaning inital
+pac <- pac |>
   clean_names() |>
-  mutate(year = as.integer(parse_number(year) + 1)) |> #parse_number from textbook, take advantage of 1 year span for each file to get the correct year
-  separate_wider_delim(cols = country_of_origin_parent_company, delim = "/", names = c("country_of_origin", "parent_company"), too_many = "merge")
+  mutate(
+    year = as.integer(parse_number(year) + 1), #*
+    dems = as.numeric(gsub("[$,]", "", dems)), #**
+    repubs = as.numeric(gsub("[$,]", "", repubs))) |> 
+  separate_wider_delim(cols = country_of_origin_parent_company, delim = "/", names = c("country_of_origin", "parent_company"), too_many = "merge") |> #***
+  subset(select = -total) #****
+  
+glimpse(pac)
+```
+
+Citations:
+* parse_number from textbook, take advantage of 1 year span for each file to get the correct year
+** read from https://stackoverflow.com/questions/50164340/negative-currency-values-using-parse-number-in-readr-r
+*** read https://stackoverflow.com/questions/76167485/how-to-use-str-split-fixed-to-split-a-column-while-removing-the-original-column for inspiration, code from documentation
+**** https://stackoverflow.com/questions/6286313/remove-an-entire-column-from-a-data-frame-in-r
+
+```{r Q2 data cleaning pivot}
+#| label: Q2 pivoting the data
+pivot_pac <- pac |>
+  #pivots dems and repubs only to party (doesn't use ! in cols to not also pivot the rest)
+  pivot_longer(cols = c(dems, repubs), names_to = "party", values_to = "amount") |>
+  #changes the party to be capitalized and the full word.
+  mutate(party = if_else(party == "dems", "Democrat", "Republican"))
+
+glimpse(pivot_pac)
+```
+```{r Q2 summary table for election cycle}
+#| label: Q2 summarizing 
 ```
 
 
