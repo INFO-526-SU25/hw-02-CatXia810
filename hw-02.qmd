@@ -22,25 +22,54 @@ pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox)
 
 ```{r Q1 data cleaning and new columns}
 #| label: Q1 data cleaning and new columns
+
+#stores new col in df
 edibnb <- edibnb |>
+  
+  #creates new column based on median of neighborhood groupings. Ignores NA to allow for median values other than NA
   group_by(neighbourhood) |>
   mutate(med_review = median(review_scores_rating, na.rm = TRUE)) |>
   ungroup() |>
-  mutate(neighbourhood = fct_reorder(neighbourhood, med_review),
-         #directed to documentation (https://forcats.tidyverse.org/reference/fct_reorder.html) through slack overflow
-         
-         neighbourhood = fct_explicit_na(neighbourhood, na_level = "Other/Unknown"))
-        #attempted with replace_na() but unable to figure out why it didn't work. Consulted AI on why it didn't work and realized that neighbourhood was in the wrong class. Directed to fct_explicit_na and code written based off forcats documentation. (https://forcats.tidyverse.org/reference/fct_explicit_na.html)
   
-edibnb
+  #re-orders the neighbourhoods so that when graphed, it is by median rating. Also turns NA into other/unknown
+  mutate(neighbourhood = fct_reorder(neighbourhood, med_review),
+         #directed to documentation (https://forcats.tidyverse.org/reference/fct_reorder.html) through various slack overflow
+         neighbourhood = fct_explicit_na(neighbourhood, na_level = "Other/Unknown"),
+        #attempted with replace_na() but unable to figure out why it didn't work. Consulted AI on why it didn't work and realized that neighborhood was in the wrong class. Directed to fct_explicit_na and code written based off forcats documentation. (https://forcats.tidyverse.org/reference/fct_explicit_na.html)
+        
+        #differentiates the NA from not NA
+        nei_color = if_else(neighbourhood == "Other/Unknown", "grey", "black"))
+        
+#used for numbers referred to in the explanation 
+table(edibnb$neighbourhood)
 ```
-```{r}
+```{r Q1 plot}
+#| label: Code to plot graph for Q1
 edibnb |>
+  #assigns neighbourhood to y because density ridges require categorical variables
   ggplot(aes(x = review_scores_rating, y = neighbourhood)) +
-  geom_density_ridges() +
+  geom_density_ridges(aes(fill = nei_color, color = nei_color)) +
+  
+  #Zooms in to 75-105 because variation is difficult to see 0-105
   coord_cartesian(xlim = c(75, 105)) +
+  
+  scale_fill_manual(values = c("grey", "grey95")) +
+  scale_color_manual(values = c("grey20", "grey95")) +
+  
+  labs(
+    x = "Score (Out of 100)",
+    y = "Neighbourhood",
+    title = "Ratings of Airbnbs in Edinburgh Neighborhoods",
+    subtitle = "Between 75 and 100",
+    caption = "Source: edibnb from dsbox package"
+  ) +
+  #gets rid of legend
+  guides(fill = "none", color = "none") +
   theme_minimal()
 ```
+The graph shows the density of ratings for Edinburgh airbnbs based on Neighborhood, starting from the highest median rated neighborhoods to the lowest. The graph only looks at the density of ratings that range from 75 to 100 due to the low volume of ratings below 75 which makes it harder to see comparisons clearly. Most Airbnbs are rated similarly in Edinburgh irregardless of neighboorhood, around 95 to 100, with the highest median (Morningside) only beating out the lowest median (Haymarket) by less than  5 points. NA ended up being the highest rated as well as having the second highest number of variables (2294), though because the neighborhood is data is missing, it is impossible to draw any conclusions from this. 
+
+I kept the variable in because it is a significant number of data points to ignore but colored it faintly so that it does not distract from the information I want to show.
 
 ## 2 - Foreign Connected PACs
 
