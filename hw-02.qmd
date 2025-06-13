@@ -5,17 +5,21 @@ format:
   html:
     embed-resources: true
 toc: true
+editor: 
+  markdown: 
+    wrap: 72
 ---
 
 Install Packages
+
 ```{r install}
 #| label: install
 if (!require("pacman"))
   install.packages("pacman")
 
-pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox, fs, janitor, ggforce, palmerpenguins, showtext)
+pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox, fs, janitor, ggforce, palmerpenguins, showtext, grid)
 
-ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
+ggplot2::theme_set(ggplot2::theme_minimal())
 options(width = 65)
 knitr::opts_chunk$set(
   fig.width = 7,
@@ -26,9 +30,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ## 1 - A new day, a new plot, a new geom
-
 
 ```{r Q1 data cleaning and new columns}
 #| label: Q1 data cleaning and new columns
@@ -53,6 +55,7 @@ edibnb <- edibnb |>
 #used for numbers referred to in the explanation 
 table(edibnb$neighbourhood)
 ```
+
 ```{r Q1 plot}
 #| label: Code to plot graph for Q1
 edibnb |>
@@ -77,11 +80,25 @@ edibnb |>
   guides(fill = "none", color = "none") +
   theme_minimal()
 ```
-The graph shows the density of ratings for Edinburgh airbnbs based on Neighborhood, starting from the highest median rated neighborhoods to the lowest. The graph only looks at the density of ratings that range from 75 to 100 due to the low volume of ratings below 75 which makes it harder to see comparisons clearly. Most Airbnbs are rated similarly in Edinburgh irregardless of neighboorhood, around 95 to 100, with the highest median (Morningside) only beating out the lowest median (Haymarket) by less than  5 points. NA ended up being the highest rated as well as having the second highest number of variables (2294), though because the neighborhood is data is missing, it is impossible to draw any conclusions from this. 
 
-I kept the variable in because it is a significant number of data points to ignore but colored it faintly so that it does not distract from the information I want to show.
+The graph shows the density of ratings for Edinburgh airbnbs based on
+Neighborhood, starting from the highest median rated neighborhoods to
+the lowest. The graph only looks at the density of ratings that range
+from 75 to 100 due to the low volume of ratings below 75 which makes it
+harder to see comparisons clearly. Most Airbnbs are rated similarly in
+Edinburgh irregardless of neighboorhood, around 95 to 100, with the
+highest median (Morningside) only beating out the lowest median
+(Haymarket) by less than 5 points. NA ended up being the highest rated
+as well as having the second highest number of variables (2294), though
+because the neighborhood is data is missing, it is impossible to draw
+any conclusions from this.
+
+I kept the variable in because it is a significant number of data points
+to ignore but colored it faintly so that it does not distract from the
+information I want to show.
 
 ## 2 - Foreign Connected PACs
+
 ```{r Get data from files}
 #| label: get data from files Q2 (code given)
 # get a list of files with "Foreign Connected PAC" in their names
@@ -91,7 +108,6 @@ list_of_files <- dir_ls(path = "data", regexp = "Foreign Connected PAC")
 # keeping track of the file name in a new column called year
 pac <- read_csv(list_of_files, id = "year")
 ```
-
 
 ```{r Q2 data cleaning initial}
 #| label: Q2 data cleaning inital
@@ -115,11 +131,17 @@ pac <- pac |>
 glimpse(pac)
 ```
 
-Citations:
-* parse_number from textbook, take advantage of 1 year span for each file to get the correct year
-** read from https://stackoverflow.com/questions/50164340/negative-currency-values-using-parse-number-in-readr-r
-*** read https://stackoverflow.com/questions/76167485/how-to-use-str-split-fixed-to-split-a-column-while-removing-the-original-column for inspiration, code from documentation
-**** https://stackoverflow.com/questions/6286313/remove-an-entire-column-from-a-data-frame-in-r
+**Citations:**
+
+\* parse_number from textbook, take advantage of 1 year span for each
+file to get the correct year\
+\*\* read from
+https://stackoverflow.com/questions/50164340/negative-currency-values-using-parse-number-in-readr-r\
+\*\*\* read
+https://stackoverflow.com/questions/76167485/how-to-use-str-split-fixed-to-split-a-column-while-removing-the-original-column
+for inspiration, code from documentation\
+\*\*\*\*
+https://stackoverflow.com/questions/6286313/remove-an-entire-column-from-a-data-frame-in-r
 
 ```{r Q2 data cleaning pivot}
 #| label: Q2 pivoting the data
@@ -132,6 +154,7 @@ pivot_pac <- pac |>
 #glimpse left for ease of grading
 glimpse(pivot_pac)
 ```
+
 ```{r Q2 summary table for election cycle UK}
 #| label: Q2 summarizing for UK contributions
 yearly_contr_uk <- pivot_pac |>
@@ -145,6 +168,7 @@ yearly_contr_uk <- pivot_pac |>
 #glimpse left for ease of grading
 glimpse(yearly_contr_uk)
 ```
+
 ```{r Q2 graph recreation UK}
 #| label: Q2 political party contribution graph recreation
 
@@ -172,10 +196,11 @@ yearly_contr_uk |>
     text = element_text(size = 10) #**
   )
 ```
-Citations
-*https://www.sthda.com/english/wiki/ggplot2-title-main-axis-and-legend-titles
-**https://stackoverflow.com/questions/18486459/change-the-font-size-of-a-ggplot-chart 
 
+**Citations**
+
+\*https://www.sthda.com/english/wiki/ggplot2-title-main-axis-and-legend-titles
+\*\*https://stackoverflow.com/questions/18486459/change-the-font-size-of-a-ggplot-chart
 
 ```{r Summarize for canada pac contributions}
 #| label: Q2 summarizing for Canadian contributions
@@ -188,6 +213,7 @@ yearly_contr_ca <- pivot_pac |>
 
 glimpse(yearly_contr_ca)
 ```
+
 ```{r Q2 graph canada}
 #| label: Q2 political party contribution graph for Canada PACs
 
@@ -212,9 +238,21 @@ yearly_contr_ca |>
     text = element_text(size = 10) #**
   )
 ```
-This graph reveals the monetary contributions to either the Democratic or Republican party from Canadian-tied PACs from 2000 to 2022. We can see that compared to the UK, Canada contributes significantly less to American political parties (at some points up to 6 times less). We also can see a steep rise in political party contribution since the 2005s (from close to 0.05 million per party in 2000 to under 1 million per party in 2020). However, most contributions are relatively equal monetarily to both the Democrat and Republican parties, with the exception of the period between 2014 and 2020, where the Republican party received more money. However, the graph seems to trend to more equal contributions.
+
+This graph reveals the monetary contributions to either the Democratic
+or Republican party from Canadian-tied PACs from 2000 to 2022. We can
+see that compared to the UK, Canada contributes significantly less to
+American political parties (at some points up to 6 times less). We also
+can see a steep rise in political party contribution since the 2005s
+(from close to 0.05 million per party in 2000 to under 1 million per
+party in 2020). However, most contributions are relatively equal
+monetarily to both the Democrat and Republican parties, with the
+exception of the period between 2014 and 2020, where the Republican
+party received more money. However, the graph seems to trend to more
+equal contributions.
 
 ## 3 - Median housing prices in the US
+
 ```{r Q3 loading data}
 #| label: loading in data for Q3
 
@@ -273,10 +311,17 @@ median_housing |>
   )
   
 ```
-Citations
-* https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf 
-** confused with scale_x_continous(n.breaks) was not working. Consulted Ai which pointed me to scale_x_date. Code created by self through referring to documentation https://ggplot2.tidyverse.org/reference/scale_date.html 
-*** inspired to use negative placement values by https://stackoverflow.com/questions/25401111/left-adjust-title-in-ggplot2-or-absolute-position-for-ggtitle 
+
+**Citations**
+
+\*
+https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf
+\*\* confused with scale_x_continous(n.breaks) was not working.
+Consulted Ai which pointed me to scale_x_date. Code created by self
+through referring to documentation\
+\*\* https://ggplot2.tidyverse.org/reference/scale_date.html\
+\*\*\* inspired to use negative placement values by
+https://stackoverflow.com/questions/25401111/left-adjust-title-in-ggplot2-or-absolute-position-for-ggtitle
 
 ```{r Q3 data wrangling recession}
 #| label: data wrangling recession data and lining it up with median housing
@@ -293,7 +338,11 @@ bounded_recession <- recessions |>
 
 bounded_recession
 ```
-* inspired to make separate variables from https://www.r-bloggers.com/2024/02/how-to-check-if-date-is-between-two-dates-in-r/
+
+**Citations**
+
+\*inspired to make separate variables from
+https://www.r-bloggers.com/2024/02/how-to-check-if-date-is-between-two-dates-in-r/
 
 ```{r Q3 Graph with recession indicators}
 #| label: Q3 graph of median house sale price with recession indicators
@@ -322,7 +371,7 @@ median_housing |>
   ) +
   theme(
     text = element_text(size = 11),
-    plot.title = element_text(hjust = -0.75, vjust = .5), 
+    plot.title = element_text(hjust = -0.55, vjust = .5), 
     plot.subtitle = element_text(hjust = -0.185),
     panel.grid.major.x = element_blank(),
     panel.grid.minor.x = element_blank(),
@@ -346,47 +395,79 @@ subset_med_house <- median_housing |>
   #use lubridate to extract year and quater into their own columns
   mutate(
     year = year(date),
-    quarter = quarter(date, type = "year.quarter"), #from lubridate documentation
+    quarter = quarter(date), #from lubridate documentation
+    quarter = paste0(year, "Q", quarter)
   )
-subset_med_house
+glimpse(subset_med_house)
 ```
-```{r}
+
+```{r Q3 median house prices by quarter}
+#| label: median house prices by quarter
+
 subset_med_house |>
-  ggplot(aes(x = quarter, y = price)) +
-  
+  #group allows line to go from point to point on a discrete x variable
+  ggplot(aes(x = quarter, y = price, group = 1)) +
+  #creates a line graph
   geom_line(size = 1, color = "royalblue") +
+  #creates the points for each quarter. shape 21 is the filled in circle
+  geom_point(color = "royalblue", shape = 21, fill = "white") +
   
-  scale_y_continuous(label = comma) +
+  #creates the y axis labels and x axis labels
+  scale_y_continuous(label = comma, breaks = c(300000, 320000, 340000, 360000)) +
+  scale_x_discrete(labels = c("Q1", "Q2","Q3","Q4", "Q1", "Q2","Q3","Q4")) + #*
+  
+  #sets the coordinates and allows for text to go out of bounds (for annotations)
+  #keeps grid within coordinate limits
+  coord_cartesian(ylim = c(300000,360000), clip = "off", expand = FALSE) +
+  
+  #annotates the 2019 and 2020
+  #**
+  annotation_custom(textGrob("2019", gp = gpar(fontsize = 10)),xmin="2019Q2",xmax="2019Q3",ymin=290000,ymax=295000) + 
+  annotation_custom(textGrob("2020", gp = gpar(fontsize = 10)),xmin="2020Q2",xmax="2020Q3",ymin=290000,ymax=295000) +
+  
+  #labels, empty caption added to view 2019 2020 annotations
   labs(
     title = "Median sales price of houses sold in the United States",
     subtitle = "Not seasonally adjusted",
     y = "Dollars",
     x = NULL,
-    caption = "Sources:Census; HUD"
+    caption = ""
   ) +
+  
+  #added border and moved title text to the correct position
   theme(
     text = element_text(size = 11),
-    plot.title = element_text(hjust = -0.75, vjust = .5), 
+    plot.title = element_text(hjust = -0.55, vjust = .5), 
     plot.subtitle = element_text(hjust = -0.185),
+    panel.border = element_rect(color = "grey90", fill = NA)
   )
-  
 
 ```
 
+**Citations\
+**\* Inspired by slack homework discussion\
+\*\* inspired from
+<https://stackoverflow.com/questions/31079210/how-can-i-add-annotations-below-the-x-axis-in-ggplot2>
+
 ## 4 - Expect More. Plot More.
-```{r}
-circles <- data.frame(
+
+```{r Making the target sign}
+#| label: making the target sign
+
+#making a tibble with x, y, radius, and color value
+#3 circles on top of each other
+circles <- as_tibble(
   x0 = c(1,1,1),
   y0 = c(1,1,1),
   r = c(3,2,1),
   color = c("r", "w","y")
 )
 
-# Behold some circles
 circles |>
+  #assigns x to x, y to y, r to r, color to both fill and color to get the borders as well
   ggplot(aes(x0 = x0, y0 = y0, r = r, fill = color, color = color)) +
-  geom_circle() +
-  scale_fill_manual(values = c("#CC0000", "white", "#cc0000")) +
+  geom_circle() + #*
+  scale_fill_manual(values = c("#CC0000", "white", "#cc0000")) + 
   scale_color_manual(values = c("#CC0000", "white", "#cc0000")) +
   coord_fixed() +
   labs(
@@ -394,25 +475,48 @@ circles |>
     y = NULL,
     caption = "TARGET ®" #got trademark through copy and pasting into the text though I think there is a harder way to do it that requires more coding? Not sure why that worked.
   ) +
+  #clear the background
   theme_void()+
+  #adjusts the Target sign
   theme(
     legend.position = "none",
     text = element_text(family = "helvetica", color = "#CC0000", face = "bold", size = 35),
     plot.caption = element_text(hjust = 0.5)
   )
 ```
-Citations
-https://www.rdocumentation.org/packages/ggforce/versions/0.4.2/topics/geom_circle 
-https://www.brandcolorcode.com/target 
+
+**Citations** \
+\*https://www.rdocumentation.org/packages/ggforce/versions/0.4.2/topics/geom_circle
+\
+Got color from https://www.brandcolorcode.com/target \
 Most code was consulted through tidyverse documentation for theme()
+
+After playing around with geom_circle, I decided to do three overlapping
+circles where the inner circles are on top of the outer ones. I used
+coord_fixed to make sure that the circles stay even. At first, I had
+some issues with getting the inner circle to be red. I assiged both the
+outside and inside circle to be the same color variable but I was unable
+to figure out why the innermost circle was moved underneath the white
+circle. I realized that I could just double assign any color to be the
+same so I set all the colors to different variables. Lastly, I had some
+issues with moving the title below the graph, so I switched to writing
+out the logo in caption instead.
 
 ## 5 - Mirror, mirror on the wall, who’s the ugliest of them all?
 
-```{r}
+```{r Q5 normal graph}
+#| label: Q5 normal graph palmer penguins
 penguins |>
+  #assign x and y to length and depth and color by species
   ggplot(aes(x = bill_length_mm, y = bill_depth_mm, color = species, shape = species)) +
+  
+  #creates scatterplot
   geom_point() +
+  
+  #facets by island
   facet_wrap(~island) +
+  
+  #labels
   labs(
     x = "Bill Length (mm)",
     y = "Bill Depth (mm)",
@@ -424,10 +528,14 @@ penguins |>
   )
 ```
 
-```{r}
+```{r Q5 ugly graph}
+#| label: Q5 ugly graph palmer penguins
+
 penguins |>
   ggplot(aes(x = bill_length_mm, y = bill_depth_mm, color = species, shape = sex)) +
+  #scatterplot size increase
   geom_point(size = 10) +
+  #add unnecessary labels to the facet
   facet_wrap(~island, labeller = label_both) +
   labs(
     x = "Bill Length (mm)",
@@ -438,18 +546,21 @@ penguins |>
     shape = "gender",
     color = "Species"
   ) +
+  #add nonsensical breaks
   scale_x_continuous(n.breaks = 43) +
   scale_y_continuous(n.breaks = 2) +
+  #adjust colors to be hard to read
   scale_color_manual(values = c("#672d2d", "#47193b", "#4b1223")) +
   coord_fixed(ratio = 2.5) +
   theme(
+    #add color elements that make it hard to distinguish on top of the background, inconsistent font and typeface and size. Legend Position is unreadable but I ended up keeping it there because I thought it was funny.
     plot.background = element_rect(fill = "#39FF14"),
     text = element_text(color = "#ff1a00"),
     axis.ticks = element_line(color = "#CFFF04"),
     panel.grid.major = element_line(color = "#FF69B4"),
     panel.grid.minor = element_line(color = "#C76E00"),
     legend.position = c(0.5,0.5),
-    plot.title = element_text(color = "#E92EFB", family = "mono", size = 19.5, hjust = -1),
+    plot.title = element_text(color = "#E92EFB", family = "mono", size = 19.5, hjust = 0),
     axis.title.y = element_text(face = "italic", color ="#C7EA46", size = 10),
     axis.text.y = element_text(face = "italic", color = "#04d9ff"),
     plot.subtitle = element_text(hjust = -0.13, size = 10),
@@ -457,3 +568,8 @@ penguins |>
     panel.border = element_rect(linetype = "dashed", fill = NA)
   )
 ```
+
+All the code is through exploring theme() r documentation. All the
+hexcodes were found online through google image searches. I wanted to
+play with not only conflicting color and size, but also unreadable and
+annoying elements and unclear formatting. I had a lot of fun :)
