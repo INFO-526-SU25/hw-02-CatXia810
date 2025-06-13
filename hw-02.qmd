@@ -7,7 +7,11 @@ format:
 toc: true
 editor: 
   markdown: 
-    wrap: 72
+    wrap: 50
+execute:
+  warning: false
+  error: false
+  message: false
 ---
 
 Install Packages
@@ -81,20 +85,25 @@ edibnb |>
   theme_minimal()
 ```
 
-The graph shows the density of ratings for Edinburgh airbnbs based on
-Neighborhood, starting from the highest median rated neighborhoods to
-the lowest. The graph only looks at the density of ratings that range
-from 75 to 100 due to the low volume of ratings below 75 which makes it
-harder to see comparisons clearly. Most Airbnbs are rated similarly in
-Edinburgh irregardless of neighboorhood, around 95 to 100, with the
-highest median (Morningside) only beating out the lowest median
-(Haymarket) by less than 5 points. NA ended up being the highest rated
-as well as having the second highest number of variables (2294), though
-because the neighborhood is data is missing, it is impossible to draw
-any conclusions from this.
+The graph shows the density of ratings for
+Edinburgh airbnbs based on Neighborhood, starting
+from the highest median rated neighborhoods to the
+lowest. The graph only looks at the density of
+ratings that range from 75 to 100 due to the low
+volume of ratings below 75 which makes it harder
+to see comparisons clearly. Most Airbnbs are rated
+similarly in Edinburgh irregardless of
+neighboorhood, around 95 to 100, with the highest
+median (Morningside) only beating out the lowest
+median (Haymarket) by less than 5 points. NA ended
+up being the highest rated as well as having the
+second highest number of variables (2294), though
+because the neighborhood is data is missing, it is
+impossible to draw any conclusions from this.
 
-I kept the variable in because it is a significant number of data points
-to ignore but colored it faintly so that it does not distract from the
+I kept the variable in because it is a significant
+number of data points to ignore but colored it
+faintly so that it does not distract from the
 information I want to show.
 
 ## 2 - Foreign Connected PACs
@@ -133,8 +142,8 @@ glimpse(pac)
 
 **Citations:**
 
-\* parse_number from textbook, take advantage of 1 year span for each
-file to get the correct year\
+\* parse_number from textbook, take advantage of 1
+year span for each file to get the correct year\
 \*\* read from
 https://stackoverflow.com/questions/50164340/negative-currency-values-using-parse-number-in-readr-r\
 \*\*\* read
@@ -239,17 +248,21 @@ yearly_contr_ca |>
   )
 ```
 
-This graph reveals the monetary contributions to either the Democratic
-or Republican party from Canadian-tied PACs from 2000 to 2022. We can
-see that compared to the UK, Canada contributes significantly less to
-American political parties (at some points up to 6 times less). We also
-can see a steep rise in political party contribution since the 2005s
-(from close to 0.05 million per party in 2000 to under 1 million per
-party in 2020). However, most contributions are relatively equal
-monetarily to both the Democrat and Republican parties, with the
-exception of the period between 2014 and 2020, where the Republican
-party received more money. However, the graph seems to trend to more
-equal contributions.
+This graph reveals the monetary contributions to
+either the Democratic or Republican party from
+Canadian-tied PACs from 2000 to 2022. We can see
+that compared to the UK, Canada contributes
+significantly less to American political parties
+(at some points up to 6 times less). We also can
+see a steep rise in political party contribution
+since the 2005s (from close to 0.05 million per
+party in 2000 to under 1 million per party in
+2020). However, most contributions are relatively
+equal monetarily to both the Democrat and
+Republican parties, with the exception of the
+period between 2014 and 2020, where the Republican
+party received more money. However, the graph
+seems to trend to more equal contributions.
 
 ## 3 - Median housing prices in the US
 
@@ -301,8 +314,8 @@ median_housing |>
     text = element_text(size = 11),
     
     #moves title and subtitle to far left
-    plot.title = element_text(hjust = -0.75, vjust = .5), #***
-    plot.subtitle = element_text(hjust = -0.185),
+    plot.title = element_text(hjust = -0.4, vjust = .5), #***
+    plot.subtitle = element_text(hjust = -0.155),
     
     #takes out x axis lines and inbetween y axis lines
     panel.grid.major.x = element_blank(),
@@ -316,11 +329,14 @@ median_housing |>
 
 \*
 https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf
-\*\* confused with scale_x_continous(n.breaks) was not working.
-Consulted Ai which pointed me to scale_x_date. Code created by self
-through referring to documentation\
-\*\* https://ggplot2.tidyverse.org/reference/scale_date.html\
-\*\*\* inspired to use negative placement values by
+\*\* confused with scale_x_continous(n.breaks) was
+not working. Consulted Ai which pointed me to
+scale_x_date. Code created by self through
+referring to documentation\
+\*\*
+https://ggplot2.tidyverse.org/reference/scale_date.html\
+\*\*\* inspired to use negative placement values
+by
 https://stackoverflow.com/questions/25401111/left-adjust-title-in-ggplot2-or-absolute-position-for-ggtitle
 
 ```{r Q3 data wrangling recession}
@@ -371,8 +387,8 @@ median_housing |>
   ) +
   theme(
     text = element_text(size = 11),
-    plot.title = element_text(hjust = -0.55, vjust = .5), 
-    plot.subtitle = element_text(hjust = -0.185),
+    plot.title = element_text(hjust = -0.4, vjust = .5), 
+    plot.subtitle = element_text(hjust = -0.155),
     panel.grid.major.x = element_blank(),
     panel.grid.minor.x = element_blank(),
     panel.grid.minor.y = element_blank()
@@ -437,8 +453,8 @@ subset_med_house |>
   #added border and moved title text to the correct position
   theme(
     text = element_text(size = 11),
-    plot.title = element_text(hjust = -0.55, vjust = .5), 
-    plot.subtitle = element_text(hjust = -0.185),
+    plot.title = element_text(hjust = -0.4, vjust = .5), 
+    plot.subtitle = element_text(hjust = -0.155),
     panel.border = element_rect(color = "grey90", fill = NA)
   )
 
@@ -456,16 +472,15 @@ subset_med_house |>
 
 #making a tibble with x, y, radius, and color value
 #3 circles on top of each other
-circles <- as_tibble(
-  x0 = c(1,1,1),
-  y0 = c(1,1,1),
-  r = c(3,2,1),
-  color = c("r", "w","y")
-)
+x0 = c(1,1,1)
+y0 = c(1,1,1)
+r = c(3,2,1)
+mycolor = c("r", "w","y")
+circles <- tibble(x0, y0, r, mycolor)
 
 circles |>
   #assigns x to x, y to y, r to r, color to both fill and color to get the borders as well
-  ggplot(aes(x0 = x0, y0 = y0, r = r, fill = color, color = color)) +
+  ggplot(aes(x0 = x0, y0 = y0, r = r, fill = mycolor, color = mycolor)) +
   geom_circle() + #*
   scale_fill_manual(values = c("#CC0000", "white", "#cc0000")) + 
   scale_color_manual(values = c("#CC0000", "white", "#cc0000")) +
@@ -488,19 +503,26 @@ circles |>
 **Citations** \
 \*https://www.rdocumentation.org/packages/ggforce/versions/0.4.2/topics/geom_circle
 \
-Got color from https://www.brandcolorcode.com/target \
-Most code was consulted through tidyverse documentation for theme()
+Got color from
+https://www.brandcolorcode.com/target \
+Most code was consulted through tidyverse
+documentation for theme()
 
-After playing around with geom_circle, I decided to do three overlapping
-circles where the inner circles are on top of the outer ones. I used
-coord_fixed to make sure that the circles stay even. At first, I had
-some issues with getting the inner circle to be red. I assiged both the
-outside and inside circle to be the same color variable but I was unable
-to figure out why the innermost circle was moved underneath the white
-circle. I realized that I could just double assign any color to be the
-same so I set all the colors to different variables. Lastly, I had some
-issues with moving the title below the graph, so I switched to writing
-out the logo in caption instead.
+After playing around with geom_circle, I decided
+to do three overlapping circles where the inner
+circles are on top of the outer ones. I used
+coord_fixed to make sure that the circles stay
+even. At first, I had some issues with getting the
+inner circle to be red. I assiged both the outside
+and inside circle to be the same color variable
+but I was unable to figure out why the innermost
+circle was moved underneath the white circle. I
+realized that I could just double assign any color
+to be the same so I set all the colors to
+different variables. Lastly, I had some issues
+with moving the title below the graph, so I
+switched to writing out the logo in caption
+instead.
 
 ## 5 - Mirror, mirror on the wall, who’s the ugliest of them all?
 
@@ -569,7 +591,9 @@ penguins |>
   )
 ```
 
-All the code is through exploring theme() r documentation. All the
-hexcodes were found online through google image searches. I wanted to
-play with not only conflicting color and size, but also unreadable and
-annoying elements and unclear formatting. I had a lot of fun :)
+All the code is through exploring theme() r
+documentation. All the hexcodes were found online
+through google image searches. I wanted to play
+with not only conflicting color and size, but also
+unreadable and annoying elements and unclear
+formatting. I had a lot of fun :)
