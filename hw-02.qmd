@@ -96,14 +96,22 @@ pac <- read_csv(list_of_files, id = "year")
 ```{r Q2 data cleaning initial}
 #| label: Q2 data cleaning inital
 pac <- pac |>
+  #cleans text and col titles
   clean_names() |>
   mutate(
+    #takes later year (out of the 2) and turns into an int
     year = as.integer(parse_number(year) + 1), #*
+    #turns contribution from char to double
     dems = as.numeric(gsub("[$,]", "", dems)), #**
     repubs = as.numeric(gsub("[$,]", "", repubs))) |> 
-  separate_wider_delim(cols = country_of_origin_parent_company, delim = "/", names = c("country_of_origin", "parent_company"), too_many = "merge") |> #***
-  subset(select = -total) #****
   
+  #separates column into two columns (where extra / are merged)
+  separate_wider_delim(cols = country_of_origin_parent_company, delim = "/", names = c("country_of_origin", "parent_company"), too_many = "merge") |> #***
+  
+  #removes column from dataframe(df)
+  subset(select = -total) #****
+
+#glimpse left to compare it to hw for ease of grading  
 glimpse(pac)
 ```
 
@@ -121,15 +129,20 @@ pivot_pac <- pac |>
   #changes the party to be capitalized and the full word.
   mutate(party = if_else(party == "dems", "Democrat", "Republican"))
 
+#glimpse left for ease of grading
 glimpse(pivot_pac)
 ```
 ```{r Q2 summary table for election cycle UK}
 #| label: Q2 summarizing for UK contributions
 yearly_contr_uk <- pivot_pac |>
+  #groups by year and political party (gives final tibble with 3 columns)
   group_by(year, party) |>
+  #filters for UK PACs 
   filter(country_of_origin == "UK") |>
+  #Calculates total for each year and each political party
   summarise(contribution = sum(amount))
 
+#glimpse left for ease of grading
 glimpse(yearly_contr_uk)
 ```
 ```{r Q2 graph recreation UK}
@@ -138,6 +151,7 @@ glimpse(yearly_contr_uk)
 yearly_contr_uk |>
   ggplot(aes(x = year, y = contribution, color = party)) +
   geom_line(size = 1) +
+  #color to match traditional political party colors
   scale_color_manual(values = c("blue", "red")) +
   labs(
     x = "Year",
@@ -146,12 +160,15 @@ yearly_contr_uk |>
     color = "Party",
     caption = "Source: OpenSecrets.org"
   ) +
+  #changes y labels to be dolar numbers rather than doubles
   scale_y_continuous(labels = label_dollar(scale = 1/1000000, suffix = "M")) +
   theme_minimal() +
   theme(
+    #moves axis labels to bottom left and legend to bottom right
     axis.title.x = element_text(hjust = 0), #*
     axis.title.y = element_text(hjust = 0),
     legend.position = c(0.9, 0.15),
+    #text in reference graph seems smaller than usual so text is decreased here as well
     text = element_text(size = 10) #**
   )
 ```
@@ -162,6 +179,8 @@ Citations
 
 ```{r Summarize for canada pac contributions}
 #| label: Q2 summarizing for Canadian contributions
+
+#code copied from above with filter changed to canada
 yearly_contr_ca <- pivot_pac |>
   group_by(year, party) |>
   filter(country_of_origin == "Canada") |>
@@ -172,6 +191,7 @@ glimpse(yearly_contr_ca)
 ```{r Q2 graph canada}
 #| label: Q2 political party contribution graph for Canada PACs
 
+#Code copied from above with title changed to reference Canada
 yearly_contr_ca |>
   ggplot(aes(x = year, y = contribution, color = party)) +
   geom_line(size = 1) +
