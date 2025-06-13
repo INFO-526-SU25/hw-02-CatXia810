@@ -13,7 +13,7 @@ Install Packages
 if (!require("pacman"))
   install.packages("pacman")
 
-pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox, fs, janitor, ggforce)
+pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox, fs, janitor, ggforce, palmerpenguins, showtext)
 
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
 options(width = 65)
@@ -407,3 +407,53 @@ https://www.brandcolorcode.com/target
 Most code was consulted through tidyverse documentation for theme()
 
 ## 5 - Mirror, mirror on the wall, who’s the ugliest of them all?
+
+```{r}
+penguins |>
+  ggplot(aes(x = bill_length_mm, y = bill_depth_mm, color = species, shape = species)) +
+  geom_point() +
+  facet_wrap(~island) +
+  labs(
+    x = "Bill Length (mm)",
+    y = "Bill Depth (mm)",
+    title = "Penguin Bill Length by Depth per Species",
+    subtitle = "On different Islands",
+    caption = "Source: PalmerPenguins dataset",
+    shape = "Species",
+    color = "Species"
+  )
+```
+
+```{r}
+penguins |>
+  ggplot(aes(x = bill_length_mm, y = bill_depth_mm, color = species, shape = sex)) +
+  geom_point(size = 10) +
+  facet_wrap(~island, labeller = label_both) +
+  labs(
+    x = "Bill Length (mm)",
+    y = "Bill Depth (mm)",
+    title = "Penguin Bill Length by Depth per Species",
+    subtitle = "On different Islands",
+    caption = "Source: PalmerPenguins dataset",
+    shape = "gender",
+    color = "Species"
+  ) +
+  scale_x_continuous(n.breaks = 43) +
+  scale_y_continuous(n.breaks = 2) +
+  scale_color_manual(values = c("#672d2d", "#47193b", "#4b1223")) +
+  coord_fixed(ratio = 2.5) +
+  theme(
+    plot.background = element_rect(fill = "#39FF14"),
+    text = element_text(color = "#ff1a00"),
+    axis.ticks = element_line(color = "#CFFF04"),
+    panel.grid.major = element_line(color = "#FF69B4"),
+    panel.grid.minor = element_line(color = "#C76E00"),
+    legend.position = c(0.5,0.5),
+    plot.title = element_text(color = "#E92EFB", family = "mono", size = 19.5, hjust = -1),
+    axis.title.y = element_text(face = "italic", color ="#C7EA46", size = 10),
+    axis.text.y = element_text(face = "italic", color = "#04d9ff"),
+    plot.subtitle = element_text(hjust = -0.13, size = 10),
+    plot.caption = element_text(size = 5, face = "bold"),
+    panel.border = element_rect(linetype = "dashed", fill = NA)
+  )
+```
