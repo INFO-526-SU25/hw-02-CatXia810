@@ -242,8 +242,14 @@ median_housing <- median_housing |>
 median_housing |>
   ggplot(aes(x = date, y = price)) +
   geom_line(size = 1, color = "royalblue") + #*
+  
+  #labels y with comma rather than exponent, breaks by 40,000
   scale_y_continuous(label = comma, breaks = seq(0, 400000, by = 40000)) +
+  
+  #renames x tick marks and breaks them per 5 years
   scale_x_date(date_breaks = "5 years", date_labels = "%Y") + #**
+  
+  #fixes issue with top y axis mark not showing (ie 400,000)
   coord_cartesian(ylim = c(0, 400001)) +
   labs(
     title = "Median sales price of houses sold in the United States",
@@ -253,9 +259,14 @@ median_housing |>
     caption = "Sources:Census; HUD"
   ) +
   theme(
+    #matches text size of graph
     text = element_text(size = 11),
+    
+    #moves title and subtitle to far left
     plot.title = element_text(hjust = -0.75, vjust = .5), #***
     plot.subtitle = element_text(hjust = -0.185),
+    
+    #takes out x axis lines and inbetween y axis lines
     panel.grid.major.x = element_blank(),
     panel.grid.minor.x = element_blank(),
     panel.grid.minor.y = element_blank()
@@ -267,10 +278,100 @@ Citations
 ** confused with scale_x_continous(n.breaks) was not working. Consulted Ai which pointed me to scale_x_date. Code created by self through referring to documentation https://ggplot2.tidyverse.org/reference/scale_date.html 
 *** inspired to use negative placement values by https://stackoverflow.com/questions/25401111/left-adjust-title-in-ggplot2-or-absolute-position-for-ggtitle 
 
-```{r}
+```{r Q3 data wrangling recession}
+#| label: data wrangling recession data and lining it up with median housing
+
+housing_start = as.Date("1963-01-01") #*
+housing_end = as.Date("2021-12-31")
+
+bounded_recession <- recessions |>
+  clean_names() |>
+  mutate(peak = ymd(peak),
+         trough = ymd(trough),
+         in_bounds = if_else(peak >= housing_start & trough <= housing_end, TRUE, FALSE)) |>
+  filter(in_bounds == TRUE)
+
+bounded_recession
+```
+* inspired to make separate variables from https://www.r-bloggers.com/2024/02/how-to-check-if-date-is-between-two-dates-in-r/
+
+```{r Q3 Graph with recession indicators}
+#| label: Q3 graph of median house sale price with recession indicators
+
+median_housing |>
+  ggplot(aes(x = date, y = price)) +
+  #creates rectangles for recession 
+  geom_rect(data = bounded_recession, 
+            aes(xmin = peak, 
+                xmax = trough,
+                #y goes to infinity
+                ymin = 0, ymax = Inf,
+                y = NULL, x = NULL), fill = "grey90") + 
+  
+  geom_line(size = 1, color = "royalblue") +
+  scale_y_continuous(label = comma, breaks = seq(0, 400000, by = 40000)) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") + 
+  coord_cartesian(ylim = c(0, 400001)) +
+  labs(
+    title = "Median sales price of houses sold in the United States",
+    subtitle = "Not seasonally adjusted",
+    y = "Dollars",
+    x = NULL,
+    #add newline to caption
+    caption = "Shaded ares indicate U.S. recessions\nSources:Census; HUD"
+  ) +
+  theme(
+    text = element_text(size = 11),
+    plot.title = element_text(hjust = -0.75, vjust = .5), 
+    plot.subtitle = element_text(hjust = -0.185),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
+  
 
 ```
 
+```{r Q3 median housing new columns}
+#| label: Q3 new columns for Q3 data wrangling
+
+#beginning and end of dates
+date_beg = as.Date("2019-01-01")
+date_end = as.Date("2021-01-01")
+
+subset_med_house <- median_housing |>
+  #filter for housing from 2019-2020
+  filter(date >= date_beg & date < date_end) |>
+  
+  #use lubridate to extract year and quater into their own columns
+  mutate(
+    year = year(date),
+    quarter = quarter(date, type = "year.quarter"), #from lubridate documentation
+  )
+subset_med_house
+```
+```{r}
+subset_med_house |>
+  ggplot(aes(x = quarter, y = price)) +
+  
+  geom_line(size = 1, color = "royalblue") +
+  
+  scale_y_continuous(label = comma) +
+  labs(
+    title = "Median sales price of houses sold in the United States",
+    subtitle = "Not seasonally adjusted",
+    y = "Dollars",
+    x = NULL,
+    caption = "Sources:Census; HUD"
+  ) +
+  theme(
+    text = element_text(size = 11),
+    plot.title = element_text(hjust = -0.75, vjust = .5), 
+    plot.subtitle = element_text(hjust = -0.185),
+  )
+  
+
+```
 
 ## 4 - Expect More. Plot More.
 
