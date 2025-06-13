@@ -215,6 +215,61 @@ yearly_contr_ca |>
 This graph reveals the monetary contributions to either the Democratic or Republican party from Canadian-tied PACs from 2000 to 2022. We can see that compared to the UK, Canada contributes significantly less to American political parties (at some points up to 6 times less). We also can see a steep rise in political party contribution since the 2005s (from close to 0.05 million per party in 2000 to under 1 million per party in 2020). However, most contributions are relatively equal monetarily to both the Democrat and Republican parties, with the exception of the period between 2014 and 2020, where the Republican party received more money. However, the graph seems to trend to more equal contributions.
 
 ## 3 - Median housing prices in the US
+```{r Q3 loading data}
+#| label: loading in data for Q3
+
+med_housing_loc <- here("data", "median-housing.csv")
+recess_loc <- here("data", "recessions.csv")
+median_housing <- read.csv(med_housing_loc)
+recessions <- read.csv(recess_loc)
+```
+
+```{r Q3 renaming and reorganizing median housing data}
+#| label: Wrangling median housing data
+
+median_housing <- median_housing |>
+  #renames variables
+  rename(date = DATE, price = MSPUS)|>
+  #changes date from char to ymd format and price into integer
+  mutate(
+    date = ymd(date),
+    price = as.integer(price))
+```
+
+```{r Q3 recreating visualization}
+#| label: Q3 recreating visual of median house sale price
+
+median_housing |>
+  ggplot(aes(x = date, y = price)) +
+  geom_line(size = 1, color = "royalblue") + #*
+  scale_y_continuous(label = comma, breaks = seq(0, 400000, by = 40000)) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") + #**
+  coord_cartesian(ylim = c(0, 400001)) +
+  labs(
+    title = "Median sales price of houses sold in the United States",
+    subtitle = "Not seasonally adjusted",
+    y = "Dollars",
+    x = NULL,
+    caption = "Sources:Census; HUD"
+  ) +
+  theme(
+    text = element_text(size = 11),
+    plot.title = element_text(hjust = -0.75, vjust = .5), #***
+    plot.subtitle = element_text(hjust = -0.185),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
+  
+```
+Citations
+* https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf 
+** confused with scale_x_continous(n.breaks) was not working. Consulted Ai which pointed me to scale_x_date. Code created by self through referring to documentation https://ggplot2.tidyverse.org/reference/scale_date.html 
+*** inspired to use negative placement values by https://stackoverflow.com/questions/25401111/left-adjust-title-in-ggplot2-or-absolute-position-for-ggtitle 
+
+```{r}
+
+```
 
 
 ## 4 - Expect More. Plot More.
