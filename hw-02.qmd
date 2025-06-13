@@ -13,7 +13,17 @@ Install Packages
 if (!require("pacman"))
   install.packages("pacman")
 
-pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox, fs, janitor) 
+pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox, fs, janitor)
+
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
+options(width = 65)
+knitr::opts_chunk$set(
+  fig.width = 7,
+  fig.asp = 0.618,
+  fig.retina = 3,
+  fig.align = "center",
+  api = 300
+)
 ```
 
 
@@ -113,10 +123,76 @@ pivot_pac <- pac |>
 
 glimpse(pivot_pac)
 ```
-```{r Q2 summary table for election cycle}
-#| label: Q2 summarizing 
-```
+```{r Q2 summary table for election cycle UK}
+#| label: Q2 summarizing for UK contributions
+yearly_contr_uk <- pivot_pac |>
+  group_by(year, party) |>
+  filter(country_of_origin == "UK") |>
+  summarise(contribution = sum(amount))
 
+glimpse(yearly_contr_uk)
+```
+```{r Q2 graph recreation UK}
+#| label: Q2 political party contribution graph recreation
+
+yearly_contr_uk |>
+  ggplot(aes(x = year, y = contribution, color = party)) +
+  geom_line(size = 1) +
+  scale_color_manual(values = c("blue", "red")) +
+  labs(
+    x = "Year",
+    y = "Total amount",
+    title = "Contributions to US political parties from UK-connected PACs",
+    color = "Party",
+    caption = "Source: OpenSecrets.org"
+  ) +
+  scale_y_continuous(labels = label_dollar(scale = 1/1000000, suffix = "M")) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(hjust = 0), #*
+    axis.title.y = element_text(hjust = 0),
+    legend.position = c(0.9, 0.15),
+    text = element_text(size = 10) #**
+  )
+```
+Citations
+*https://www.sthda.com/english/wiki/ggplot2-title-main-axis-and-legend-titles
+**https://stackoverflow.com/questions/18486459/change-the-font-size-of-a-ggplot-chart 
+
+
+```{r Summarize for canada pac contributions}
+#| label: Q2 summarizing for Canadian contributions
+yearly_contr_ca <- pivot_pac |>
+  group_by(year, party) |>
+  filter(country_of_origin == "Canada") |>
+  summarise(contribution = sum(amount))
+
+glimpse(yearly_contr_ca)
+```
+```{r Q2 graph canada}
+#| label: Q2 political party contribution graph for Canada PACs
+
+yearly_contr_ca |>
+  ggplot(aes(x = year, y = contribution, color = party)) +
+  geom_line(size = 1) +
+  scale_color_manual(values = c("blue", "red")) +
+  labs(
+    x = "Year",
+    y = "Total amount",
+    title = "Contributions to US political parties from Canadian-connected PACs",
+    color = "Party",
+    caption = "Source: OpenSecrets.org"
+  ) +
+  scale_y_continuous(labels = label_dollar(scale = 1/1000000, suffix = "M")) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(hjust = 0), #*
+    axis.title.y = element_text(hjust = 0),
+    legend.position = c(0.9, 0.15),
+    text = element_text(size = 10) #**
+  )
+```
+This graph reveals the monetary contributions to either the Democratic or Republican party from Canadian-tied PACs from 2000 to 2022. We can see that compared to the UK, Canada contributes significantly less to American political parties (at some points up to 6 times less). We also can see a steep rise in political party contribution since the 2005s (from close to 0.05 million per party in 2000 to under 1 million per party in 2020). However, most contributions are relatively equal monetarily to both the Democrat and Republican parties, with the exception of the period between 2014 and 2020, where the Republican party received more money. However, the graph seems to trend to more equal contributions.
 
 ## 3 - Median housing prices in the US
 
