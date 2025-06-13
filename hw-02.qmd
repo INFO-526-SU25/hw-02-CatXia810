@@ -13,7 +13,7 @@ Install Packages
 if (!require("pacman"))
   install.packages("pacman")
 
-pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox, fs, janitor)
+pacman::p_load(tidyverse, here, glue, scales, ggridges, dsbox, fs, janitor, ggforce)
 
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
 options(width = 65)
@@ -374,6 +374,36 @@ subset_med_house |>
 ```
 
 ## 4 - Expect More. Plot More.
+```{r}
+circles <- data.frame(
+  x0 = c(1,1,1),
+  y0 = c(1,1,1),
+  r = c(3,2,1),
+  color = c("r", "w","y")
+)
 
+# Behold some circles
+circles |>
+  ggplot(aes(x0 = x0, y0 = y0, r = r, fill = color, color = color)) +
+  geom_circle() +
+  scale_fill_manual(values = c("#CC0000", "white", "#cc0000")) +
+  scale_color_manual(values = c("#CC0000", "white", "#cc0000")) +
+  coord_fixed() +
+  labs(
+    x = NULL,
+    y = NULL,
+    caption = "TARGET ®" #got trademark through copy and pasting into the text though I think there is a harder way to do it that requires more coding? Not sure why that worked.
+  ) +
+  theme_void()+
+  theme(
+    legend.position = "none",
+    text = element_text(family = "helvetica", color = "#CC0000", face = "bold", size = 35),
+    plot.caption = element_text(hjust = 0.5)
+  )
+```
+Citations
+https://www.rdocumentation.org/packages/ggforce/versions/0.4.2/topics/geom_circle 
+https://www.brandcolorcode.com/target 
+Most code was consulted through tidyverse documentation for theme()
 
 ## 5 - Mirror, mirror on the wall, who’s the ugliest of them all?
